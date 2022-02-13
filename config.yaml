@@ -1,0 +1,13 @@
+credentials:
+  path: credentials/credentials.json
+
+invoice:
+  doc_file_id: 1DTDvMk7g-bS_LM0tEijcijxUee6SIN1esTywyeW__hs
+
+recipients:
+  spreadsheet_file_id: 1lCme-GkRjgsAWzYfvOx3yEN-W8JzrYnxfcPMk2q4sYw
+  is_active:
+    column: "Actief"
+    true_value: ["Ja", "ja"]
+  email:
+    column: "Email"
