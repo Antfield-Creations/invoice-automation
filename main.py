@@ -17,7 +17,7 @@ def main(config: Config) -> None:
 
     # Get the invoice template
     doc_id = config['invoice']['template_doc_id']
-    template_document = docs.documents().get(documentId=doc_id).execute()
+    template_document = docs.get(documentId=doc_id).execute()
     print("Done!")
 
 
