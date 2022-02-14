@@ -11,9 +11,7 @@ def main(config: Config) -> None:
     docs = build(serviceName='docs', version='v1', credentials=creds).documents()
     sheets = build(serviceName='sheets', version='v4', credentials=creds).spreadsheets()
 
-    # Get the recipients sheet
-    sheet_id = config['recipients']['sheet_id']
-    recipients_sheet = sheets.get(spreadsheetId=sheet_id).execute()
+    recipients = get_recipients(sheets, config)
 
     # Get the invoice template
     doc_id = config['invoice']['template_doc_id']
