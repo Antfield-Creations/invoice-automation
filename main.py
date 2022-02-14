@@ -8,7 +8,12 @@ from config import load_config, Config
 def main(config: Config) -> None:
     # Connect to Google Docs API
     creds = get_credentials(config)
-    docs = build(serviceName='docs', version='v1', credentials=creds)
+    docs = build(serviceName='docs', version='v1', credentials=creds).documents()
+    sheets = build(serviceName='sheets', version='v4', credentials=creds).spreadsheets()
+
+    # Get the recipients sheet
+    sheet_id = config['recipients']['sheet_id']
+    recipients_sheet = sheets.get(spreadsheetId=sheet_id).execute()
 
     # Get the invoice template
     doc_id = config['invoice']['template_doc_id']
