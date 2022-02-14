@@ -14,9 +14,15 @@ invoice:
 
 recipients:
   sheet_id: 1lCme-GkRjgsAWzYfvOx3yEN-W8JzrYnxfcPMk2q4sYw
-  tab: "Leden"
+  tab: Ledenlijst
+  range: "A:F"
   is_active:
-    column: "Actief"
-    true_value: ["Ja", "ja"]
-  email:
-    column: "Email"
+    column: Actief
+    true_value: [Ja, ja]
+
+  # Templated value lookups: the values below are column headers in the spreadsheet.
+  # The 'email' value is to be looked up in the column "Email"
+  email: Email
+  address: Adres
+  postcode: Postcode
+  city: Plaats
