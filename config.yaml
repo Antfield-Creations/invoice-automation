@@ -1,5 +1,9 @@
-credentials:
-  path: credentials/credentials.json
+# This needs to be an OAuth 2.0 ID: https://console.developers.google.com/apis/credentials
+oauth:
+  credentials_path: credentials/oauth-credentials.json
+  token_path: credentials/token.json
+  scopes:
+    - https://www.googleapis.com/auth/documents
 
 invoice:
   doc_file_id: 1DTDvMk7g-bS_LM0tEijcijxUee6SIN1esTywyeW__hs
