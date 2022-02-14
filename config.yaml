@@ -6,7 +6,10 @@ oauth:
     - https://www.googleapis.com/auth/documents
 
 invoice:
-  doc_file_id: 1DTDvMk7g-bS_LM0tEijcijxUee6SIN1esTywyeW__hs
+  template_doc_id: 1DTDvMk7g-bS_LM0tEijcijxUee6SIN1esTywyeW__hs
+  invoice_log:
+    sheet_id: 1lCme-GkRjgsAWzYfvOx3yEN-W8JzrYnxfcPMk2q4sYw
+    tab: "Facturen"
 
 recipients:
   spreadsheet_file_id: 1lCme-GkRjgsAWzYfvOx3yEN-W8JzrYnxfcPMk2q4sYw
