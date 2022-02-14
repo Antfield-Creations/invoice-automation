@@ -3,6 +3,7 @@ from googleapiclient.discovery import build
 
 from auth import get_credentials
 from config import load_config, Config
+from docs_api import get_recipients
 
 
 def main(config: Config) -> None:
