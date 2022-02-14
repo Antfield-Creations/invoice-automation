@@ -17,7 +17,9 @@ def main(config: Config) -> None:
     # Get the invoice template
     doc_id = config['invoice']['template_doc_id']
     template_document = docs.get(documentId=doc_id).execute()
-    print("Done!")
+
+    for recipient in recipients:
+        print(recipient)
 
 
 if __name__ == '__main__':
