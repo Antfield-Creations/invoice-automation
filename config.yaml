@@ -12,7 +12,8 @@ invoice:
     tab: "Facturen"
 
 recipients:
-  spreadsheet_file_id: 1lCme-GkRjgsAWzYfvOx3yEN-W8JzrYnxfcPMk2q4sYw
+  sheet_id: 1lCme-GkRjgsAWzYfvOx3yEN-W8JzrYnxfcPMk2q4sYw
+  tab: "Leden"
   is_active:
     column: "Actief"
     true_value: ["Ja", "ja"]
