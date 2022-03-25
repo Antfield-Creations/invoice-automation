@@ -9,6 +9,7 @@ from docs_api import get_recipients
 def main(config: Config) -> None:
     # Connect to Google Docs API
     creds = get_credentials(config)
+    drive = build(serviceName='drive', version='v3', credentials=creds).files()
     docs = build(serviceName='docs', version='v1', credentials=creds).documents()
     sheets = build(serviceName='sheets', version='v4', credentials=creds).spreadsheets()
 
@@ -19,6 +20,13 @@ def main(config: Config) -> None:
     template_document = docs.get(documentId=doc_id).execute()
 
     for recipient in recipients:
+        drive_response = drive.copy(
+            fileId=invoice_template_doc_id,
+            folder='test',
+        ).execute()
+        invoice_copy_id = drive_response.get('id')
+        docs.get(documentId=invoice_copy_id).execute()
+
         print(recipient)
 
 
