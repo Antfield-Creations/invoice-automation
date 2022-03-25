@@ -16,8 +16,7 @@ def main(config: Config) -> None:
     recipients = get_recipients(sheets, config)
 
     # Get the invoice template
-    doc_id = config['invoice']['template_doc_id']
-    template_document = docs.get(documentId=doc_id).execute()
+    invoice_template_doc_id = config['invoice']['template_doc_id']
 
     for recipient in recipients:
         drive_response = drive.copy(
