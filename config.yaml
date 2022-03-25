@@ -3,6 +3,7 @@ oauth:
   credentials_path: credentials/oauth-credentials.json
   token_path: credentials/token.json
   scopes:
+    - https://www.googleapis.com/auth/drive
     - https://www.googleapis.com/auth/documents
     - https://www.googleapis.com/auth/spreadsheets
 
