@@ -22,6 +22,7 @@ def main(config: Config) -> None:
     drive = build(serviceName='drive', version='v3', credentials=creds).files()
     docs = build(serviceName='docs', version='v1', credentials=creds).documents()
     sheets = build(serviceName='sheets', version='v4', credentials=creds).spreadsheets()
+    gmail = build(serviceName='gmail', version='v2', credentials=creds).users().messages()
 
     recipients = get_recipients(sheets, config)
     now = datetime.datetime.now()
