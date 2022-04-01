@@ -1,4 +1,6 @@
 import argparse
+import datetime
+
 from googleapiclient.discovery import build
 
 from auth import get_credentials
@@ -7,7 +9,7 @@ from docs_api import get_recipients
 
 
 def main(config: Config) -> None:
-    # Connect to Google Docs API
+    # Connect to Google APIs
     creds = get_credentials(config)
     drive = build(serviceName='drive', version='v3', credentials=creds).files()
     docs = build(serviceName='docs', version='v1', credentials=creds).documents()
@@ -17,14 +19,19 @@ def main(config: Config) -> None:
 
     # Get the invoice template
     invoice_template_doc_id = config['invoice']['template_doc_id']
+    test_folder = '1JgtKVhl7LLll1und9xDjxWunXRQGp__b'
+    today = datetime.date.today()
 
     for recipient in recipients:
         drive_response = drive.copy(
             fileId=invoice_template_doc_id,
-            folder='test',
+            body={
+                'parents': [test_folder],
+                'name': f"Factuur {today.year} maand {today.month} voor {recipient['Naam']}"
+            }
         ).execute()
         invoice_copy_id = drive_response.get('id')
-        docs.get(documentId=invoice_copy_id).execute()
+        invoice_copy = docs.get(documentId=invoice_copy_id).execute()
 
         print(recipient)
 
