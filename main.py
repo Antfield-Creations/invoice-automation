@@ -91,7 +91,7 @@ def main(config: Config) -> None:
             }},
             {'replaceAllText': {
                     'containsText': {'text': '{{invoice_id}}'},
-                    'replaceText': f"AM{now.year}{now.month}-{now.microsecond}",
+                    'replaceText': invoice_id,
             }},
         ]
 
