@@ -52,8 +52,14 @@ def main(config: Config) -> None:
                 'name': f"Factuur {now.year} maand {now.month} voor {recipient['Naam']}"
             }
         ).execute()
+
+        # Google doc id
         invoice_copy_id = drive_response.get('id')
 
+        # human-readable invoice id
+        invoice_id = f"AM{now.year}{now.month}-{now.microsecond}"
+
+        # Configure templated values
         changes = [
             {'replaceAllText': {
                     'containsText': {'text': '{{recipient_name}}'},
