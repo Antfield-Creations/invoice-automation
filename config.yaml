@@ -9,9 +9,11 @@ oauth:
 
 invoice:
   template_doc_id: 1DTDvMk7g-bS_LM0tEijcijxUee6SIN1esTywyeW__hs
+  # Set target_folder to empty to automatically use a folder by year
+  target_folder: 1JgtKVhl7LLll1und9xDjxWunXRQGp__b
   invoice_log:
     sheet_id: 1lCme-GkRjgsAWzYfvOx3yEN-W8JzrYnxfcPMk2q4sYw
-    tab: "Facturen"
+    tab: Facturen
 
 recipients:
   sheet_id: 1lCme-GkRjgsAWzYfvOx3yEN-W8JzrYnxfcPMk2q4sYw

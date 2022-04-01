@@ -16,17 +16,28 @@ def main(config: Config) -> None:
     sheets = build(serviceName='sheets', version='v4', credentials=creds).spreadsheets()
 
     recipients = get_recipients(sheets, config)
+    today = datetime.date.today()
 
     # Get the invoice template
     invoice_template_doc_id = config['invoice']['template_doc_id']
-    test_folder = '1JgtKVhl7LLll1und9xDjxWunXRQGp__b'
-    today = datetime.date.today()
+    if config['invoice']['target_folder'] is not None:
+        target_folder = config['invoice']['target_folder']
+    else:
+        year_folders = drive.list(
+            q=f"mimeType='application/vnd.google-apps.folder' and name='{today.year}'",
+            spaces='drive',
+            fields='nextPageToken, files(id, name)',
+        ).execute()
+        if len(year_folders) == 0:
+            raise NotImplementedError('Still have to implement making target year folder')
+        else:
+            target_folder = year_folders[0]
 
     for recipient in recipients:
         drive_response = drive.copy(
             fileId=invoice_template_doc_id,
             body={
-                'parents': [test_folder],
+                'parents': [target_folder],
                 'name': f"Factuur {today.year} maand {today.month} voor {recipient['Naam']}"
             }
         ).execute()

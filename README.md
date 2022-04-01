@@ -19,3 +19,14 @@ Assumes the following:
 pipenv install
 ```
 If you don't have `pipenv`, install it using `pip install --user pipenv`.
+
+## What it does
+The script:
+- [X] It reads the recipient detailss from `config['recipients']['sheet_id']`
+- [X] It reads the invoice template id from `config['invoice']['template_doc_id']`
+- [ ] It creates a folder with name identical to the current year if it does not exist
+- [X] It finds the id of the folder with name identical to the current year
+
+For each recipient:
+- [X] It copies the invoice template to the target folder as a new invoice document
+- [X] It sets the name of the document to contain the recipient's name, the year and the month
