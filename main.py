@@ -100,7 +100,7 @@ def main(config: Config) -> None:
         # Save the file locally
         request = drive.export_media(fileId=invoice_copy_id, mimeType='application/pdf')
 
-        with TemporaryDirectory as tempdir:
+        with TemporaryDirectory() as tempdir:
             invoice_file_path = os.path.join(tempdir, 'invoice.pdf')
             fh = io.FileIO(invoice_file_path)
             downloader = MediaIoBaseDownload(fh, request)
