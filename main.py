@@ -96,6 +96,46 @@ def main(config: Config) -> None:
         ]
 
         docs.batchUpdate(documentId=invoice_copy_id, body={'requests': changes}).execute()
+
+        # Save the file locally
+        request = drive.export_media(fileId=invoice_copy_id, mimeType='application/pdf')
+
+        with TemporaryDirectory as tempdir:
+            invoice_file_path = os.path.join(tempdir, 'invoice.pdf')
+            fh = io.FileIO(invoice_file_path)
+            downloader = MediaIoBaseDownload(fh, request)
+
+            done = False
+            while done is False:
+                status, done = downloader.next_chunk()
+
+            # Create the invoice message
+            message = MIMEMultipart()
+            content_type, encoding = mimetypes.guess_type(invoice_file_path)
+            main_type, sub_type = content_type.split('/', 1)
+
+            with open(invoice_file_path, 'rb') as f:
+                msg = MIMEBase(main_type, sub_type)
+                msg.set_payload(f.read())
+
+            filename = os.path.basename(invoice_file_path)
+            msg.add_header('Content-Disposition', 'attachment', filename=filename)
+            message.attach(msg)
+
+        message['to'] = recipient['Email']
+        message['from'] = 'Atelier Miereveld <ateliermiereveld@gmail.com>'
+        message['Subject'] = f'Contributie {now.year}-{now.month}'
+        msg = MIMEText(
+            f'Beste {recipient["Naam"]},\n\n'
+            f'Hierbij ontvang je (aangehecht) de factuur voor maand {now.month} van {now.year}.\n'
+            'Veel creatief plezier gewenst!\n\n'
+            'Het bestuur van Atelier Miereveld\n\n'
+            '(Dit bericht is automatisch aangemaakt en verzonden)'
+        )
+        message.attach(msg)
+
+        gmail.send(userId='me', body=message)
+
         print(f"Created invoice {invoice_copy_id}")
 
 
