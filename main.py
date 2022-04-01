@@ -102,7 +102,8 @@ def main(config: Config) -> None:
 
         with TemporaryDirectory() as tempdir:
             invoice_file_path = os.path.join(tempdir, 'invoice.pdf')
-            fh = io.FileIO(invoice_file_path)
+
+            fh = io.FileIO(file=invoice_file_path, mode='w')
             downloader = MediaIoBaseDownload(fh, request)
 
             done = False
@@ -134,6 +135,7 @@ def main(config: Config) -> None:
         )
         message.attach(msg)
 
+        # TODO: TypeError: Object of type MIMEMultipart is not JSON serializable
         gmail.send(userId='me', body=message)
 
         print(f"Created invoice {invoice_copy_id}")
