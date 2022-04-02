@@ -2,7 +2,6 @@ import argparse
 import base64
 import datetime
 import io
-import mimetypes
 import os.path
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
@@ -99,21 +98,23 @@ def main(config: Config) -> None:
         docs.batchUpdate(documentId=invoice_copy_id, body={'requests': changes}).execute()
 
         # Save the file locally
-        request = drive.export_media(fileId=invoice_copy_id, mimeType='application/pdf')
+        content_type = 'application/pdf'
+        request = drive.export_media(fileId=invoice_copy_id, mimeType=content_type)
 
         with TemporaryDirectory() as tempdir:
             invoice_file_path = os.path.join(tempdir, 'invoice.pdf')
 
-            fh = io.FileIO(file=invoice_file_path, mode='w')
+            fh = io.FileIO(file=invoice_file_path, mode='wb')
             downloader = MediaIoBaseDownload(fh, request)
 
             done = False
             while done is False:
                 status, done = downloader.next_chunk()
 
+            fh.close()
+
             # Create the invoice message
             message = MIMEMultipart()
-            content_type, encoding = mimetypes.guess_type(invoice_file_path)
             main_type, sub_type = content_type.split('/', 1)
 
             with open(invoice_file_path, 'rb') as f:
