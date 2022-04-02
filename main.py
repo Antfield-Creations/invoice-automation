@@ -117,28 +117,28 @@ def main(config: Config) -> None:
             main_type, sub_type = content_type.split('/', 1)
 
             with open(invoice_file_path, 'rb') as f:
-                body = MIMEBase(main_type, sub_type)
-                body.set_payload(f.read())
+                attachment = MIMEBase(main_type, sub_type)
+                attachment.set_payload(f.read())
 
             filename = os.path.basename(invoice_file_path)
-            body.add_header('Content-Disposition', 'attachment', filename=filename)
+            attachment.add_header('Content-Disposition', 'attachment', filename=filename)
+            message.attach(attachment)
+
+            message['to'] = recipient['Email']
+            message['from'] = 'ateliermiereveld@gmail.com'
+            message['subject'] = f'Contributie {now.year}-{now.month}'
+            body = MIMEText(
+                f'Beste {recipient["Naam"]},\n\n'
+                f'Hierbij ontvang je (aangehecht) de factuur voor maand {now.month} van {now.year}.\n'
+                'Veel creatief plezier gewenst!\n\n'
+                'Het bestuur van Atelier Miereveld\n\n'
+                '(Dit bericht is automatisch aangemaakt en verzonden)'
+            )
             message.attach(body)
 
-        message['to'] = recipient['Email']
-        message['from'] = 'ateliermiereveld@gmail.com'
-        message['subject'] = f'Contributie {now.year}-{now.month}'
-        body = MIMEText(
-            f'Beste {recipient["Naam"]},\n\n'
-            f'Hierbij ontvang je (aangehecht) de factuur voor maand {now.month} van {now.year}.\n'
-            'Veel creatief plezier gewenst!\n\n'
-            'Het bestuur van Atelier Miereveld\n\n'
-            '(Dit bericht is automatisch aangemaakt en verzonden)'
-        )
-        message.attach(body)
-
-        # TODO: `send` isn't actually sending yet
-        message_b64 = base64.urlsafe_b64encode(message.as_bytes()).decode()
-        gmail_response = gmail.send(userId='me', body={'raw': message_b64})
+            # TODO: `send` isn't actually sending the invoice attachment yet
+            message_b64 = base64.urlsafe_b64encode(message.as_bytes()).decode()
+            gmail_response = gmail.send(userId='me', body={'raw': message_b64}).execute()
 
         print(f"Created invoice {invoice_copy_id}")
 
