@@ -31,3 +31,5 @@ For each recipient:
 - [X] It copies the invoice template to the target folder as a new invoice document
 - [X] It sets the name of the document to contain the recipient's name, the year and the month
 - [X] It sets the templated values to actual ones from time properties and sheet values
+- [X] It locally downloads the file as pdf
+- [ ] It sends the file over e-mail
