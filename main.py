@@ -3,7 +3,8 @@ import base64
 import datetime
 import io
 import os.path
-from email.mime.base import MIMEBase
+from email.encoders import encode_base64
+from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from tempfile import TemporaryDirectory
@@ -118,12 +119,10 @@ def main(config: Config) -> None:
             main_type, sub_type = content_type.split('/', 1)
 
             with open(invoice_file_path, 'rb') as f:
-                attachment = MIMEBase(main_type, sub_type)
-                attachment.set_payload(f.read())
-
-            filename = os.path.basename(invoice_file_path)
-            attachment.add_header('Content-Disposition', 'attachment', filename=filename)
-            message.attach(attachment)
+                attachment = MIMEApplication(f.read(), _subtype=sub_type, _encoder=encode_base64)
+                filename = os.path.basename(invoice_file_path)
+                attachment.add_header('content-disposition', 'attachment', filename=filename)
+                message.attach(attachment)
 
             message['to'] = recipient['Email']
             message['from'] = 'ateliermiereveld@gmail.com'
