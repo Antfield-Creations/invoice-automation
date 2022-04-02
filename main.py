@@ -1,4 +1,5 @@
 import argparse
+import base64
 import datetime
 import io
 import mimetypes
@@ -116,27 +117,28 @@ def main(config: Config) -> None:
             main_type, sub_type = content_type.split('/', 1)
 
             with open(invoice_file_path, 'rb') as f:
-                msg = MIMEBase(main_type, sub_type)
-                msg.set_payload(f.read())
+                body = MIMEBase(main_type, sub_type)
+                body.set_payload(f.read())
 
             filename = os.path.basename(invoice_file_path)
-            msg.add_header('Content-Disposition', 'attachment', filename=filename)
-            message.attach(msg)
+            body.add_header('Content-Disposition', 'attachment', filename=filename)
+            message.attach(body)
 
         message['to'] = recipient['Email']
-        message['from'] = 'Atelier Miereveld <ateliermiereveld@gmail.com>'
-        message['Subject'] = f'Contributie {now.year}-{now.month}'
-        msg = MIMEText(
+        message['from'] = 'ateliermiereveld@gmail.com'
+        message['subject'] = f'Contributie {now.year}-{now.month}'
+        body = MIMEText(
             f'Beste {recipient["Naam"]},\n\n'
             f'Hierbij ontvang je (aangehecht) de factuur voor maand {now.month} van {now.year}.\n'
             'Veel creatief plezier gewenst!\n\n'
             'Het bestuur van Atelier Miereveld\n\n'
             '(Dit bericht is automatisch aangemaakt en verzonden)'
         )
-        message.attach(msg)
+        message.attach(body)
 
-        # TODO: TypeError: Object of type MIMEMultipart is not JSON serializable
-        gmail.send(userId='me', body=message)
+        # TODO: `send` isn't actually sending yet
+        message_b64 = base64.urlsafe_b64encode(message.as_bytes()).decode()
+        gmail_response = gmail.send(userId='me', body={'raw': message_b64})
 
         print(f"Created invoice {invoice_copy_id}")
 
