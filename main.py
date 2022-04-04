@@ -45,20 +45,20 @@ def main(config: Config) -> None:
         else:
             target_folder = year_folders[0]
 
-    for recipient in recipients:
+    for recipient_id, recipient in enumerate(recipients):
+        # human-readable invoice id
+        invoice_id = f"AM{now.year}{now.month}-{recipient_id}"
+
         drive_response = drive.copy(
             fileId=invoice_template_doc_id,
             body={
                 'parents': [target_folder],
-                'name': f"Factuur {now.year} maand {now.month} voor {recipient['Naam']}"
+                'name': f"Factuur id {invoice_id} voor {recipient['Naam']}"
             }
         ).execute()
 
         # Google doc id
         invoice_copy_id = drive_response.get('id')
-
-        # human-readable invoice id
-        invoice_id = f"AM{now.year}{now.month}-{now.microsecond}"
 
         # Configure templated values
         changes = [
