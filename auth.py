@@ -37,4 +37,3 @@ def get_credentials(config: Config) -> Credentials:
             token.write(creds.to_json())
 
     return creds
-
