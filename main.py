@@ -26,6 +26,12 @@ def main(config: Config) -> None:
     gmail = build(serviceName='gmail', version='v1', credentials=creds).users().messages()
 
     recipients = get_recipients(sheets, config)
+    name_column = config['recipients']['name']
+    email_column = config['recipients']['email']
+    address_column = config['recipients']['address']
+    postcode_column = config['recipients']['postcode']
+    city_column = config['recipients']['city']
+
     now = datetime.datetime.now()
 
     # Get the invoice template
@@ -53,7 +59,7 @@ def main(config: Config) -> None:
             fileId=invoice_template_doc_id,
             body={
                 'parents': [target_folder],
-                'name': f"Factuur id {invoice_id} voor {recipient['Naam']}"
+                'name': f"Factuur id {invoice_id} voor {recipient[name_column]}"
             }
         ).execute()
 
@@ -64,19 +70,19 @@ def main(config: Config) -> None:
         changes = [
             {'replaceAllText': {
                     'containsText': {'text': '{{recipient_name}}'},
-                    'replaceText': recipient['Naam'],
+                    'replaceText': recipient[name_column],
             }},
             {'replaceAllText': {
                     'containsText': {'text': '{{address}}'},
-                    'replaceText': recipient['Adres'],
+                    'replaceText': recipient[address_column],
             }},
             {'replaceAllText': {
                     'containsText': {'text': '{{postcode}}'},
-                    'replaceText': recipient['Postcode'],
+                    'replaceText': recipient[postcode_column],
             }},
             {'replaceAllText': {
                     'containsText': {'text': '{{city}}'},
-                    'replaceText': recipient['Plaats'],
+                    'replaceText': recipient[city_column],
             }},
             {'replaceAllText': {
                     'containsText': {'text': '{{date}}'},
@@ -124,13 +130,14 @@ def main(config: Config) -> None:
                 attachment.add_header('content-disposition', 'attachment', filename=filename)
                 message.attach(attachment)
 
-            message['to'] = recipient['Email']
+            message['to'] = recipient[email_column]
             message['from'] = 'ateliermiereveld@gmail.com'
             message['subject'] = f'Contributie {now.year}-{now.month}'
             body = MIMEText(
-                f'Beste {recipient["Naam"]},\n\n'
-                f'Hierbij ontvang je (aangehecht) de factuur voor maand {now.month} van {now.year}.\n'
-                'Veel creatief plezier gewenst!\n\n'
+                f'Beste {recipient[name_column]},\n\n'
+                f'Hierbij ontvang je (aangehecht) de factuur voor maand {next_month} van {now.year}.\n'
+                'Gelieve deze z.s.m, doch uiterlijk binnen een week te voldoen. '
+                'Alvast dank,Veel creatief plezier gewenst!\n\n'
                 'Het bestuur van Atelier Miereveld\n\n'
                 '(Dit bericht is automatisch aangemaakt en verzonden)'
             )
@@ -140,7 +147,7 @@ def main(config: Config) -> None:
             message_b64 = base64.urlsafe_b64encode(message.as_bytes()).decode()
             gmail_response = gmail.send(userId='me', body={'raw': message_b64}).execute()
 
-        print(f"Created invoice {invoice_copy_id}")
+        print(f"Created invoice {invoice_copy_id} for {recipient[name_column]}")
 
 
 if __name__ == '__main__':
