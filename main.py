@@ -52,8 +52,9 @@ def main(config: Config) -> None:
             target_folder = year_folders['files'][0]['id']
 
     for recipient_id, recipient in enumerate(recipients):
+        next_month = now.month + 1
         # human-readable invoice id
-        invoice_id = f"AM{now.year}{now.month}-{recipient_id}"
+        invoice_id = f"AM{now.year}{next_month}-{recipient_id}"
 
         drive_response = drive.copy(
             fileId=invoice_template_doc_id,
@@ -94,7 +95,7 @@ def main(config: Config) -> None:
             }},
             {'replaceAllText': {
                     'containsText': {'text': '{{month}}'},
-                    'replaceText': str(now.month),
+                    'replaceText': str(next_month),
             }},
             {'replaceAllText': {
                     'containsText': {'text': '{{invoice_id}}'},
@@ -132,7 +133,7 @@ def main(config: Config) -> None:
 
             message['to'] = recipient[email_column]
             message['from'] = 'ateliermiereveld@gmail.com'
-            message['subject'] = f'Contributie {now.year}-{now.month}'
+            message['subject'] = f'Contributie {now.year}-{next_month}'
             body = MIMEText(
                 f'Beste {recipient[name_column]},\n\n'
                 f'Hierbij ontvang je (aangehecht) de factuur voor maand {next_month} van {now.year}.\n'
