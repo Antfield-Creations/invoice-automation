@@ -46,10 +46,10 @@ def main(config: Config) -> None:
             fields='nextPageToken, files(id, name)',
         ).execute()
 
-        if len(year_folders) == 0:
+        if len(year_folders['files']) == 0:
             raise NotImplementedError('Still have to implement making target year folder')
         else:
-            target_folder = year_folders[0]
+            target_folder = year_folders['files'][0]['id']
 
     for recipient_id, recipient in enumerate(recipients):
         # human-readable invoice id
