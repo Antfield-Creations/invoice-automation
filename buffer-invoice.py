@@ -114,9 +114,9 @@ def main(config: Config) -> None:
             message['subject'] = f'Contributie {now.year}-{next_month}'
             body = MIMEText(
                 f'Beste {recipient[name_column]},\n\n'
-                f'Hierbij ontvang je (aangehecht) de factuur voor maand {next_month} van {now.year}.\n'
-                'Gelieve deze z.s.m, doch uiterlijk binnen 14 dagen te voldoen. '
-                'Alvast dank,Veel creatief plezier gewenst!\n\n'
+                'Hierbij ontvang je (aangehecht) de eenmalige factuur voor opbouw van de buffer voor het atelier.\n'
+                'Gelieve deze z.s.m, doch uiterlijk binnen 14 dagen te voldoen.\n\n'
+                'Alvast dank,\n\n'
                 'Het bestuur van Atelier Miereveld\n\n'
                 '(Dit bericht is automatisch aangemaakt en verzonden)'
             )
