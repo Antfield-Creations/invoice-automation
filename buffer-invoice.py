@@ -38,7 +38,6 @@ def main(config: Config) -> None:
     invoice_template_doc_id = '1W7uhfDQFTNnV5DtMEBqtJFmZeWZgZ1Tda87vCQjMvHI'
 
     for recipient_id, recipient in enumerate(recipients):
-        next_month = now.month + 1
         # human-readable invoice id
         invoice_id = f"AMBUFFER-{recipient_id}"
 
@@ -111,7 +110,7 @@ def main(config: Config) -> None:
 
             message['to'] = recipient[email_column]
             message['from'] = 'ateliermiereveld@gmail.com'
-            message['subject'] = f'Contributie {now.year}-{next_month}'
+            message['subject'] = f'Eenmalige factuur huurbuffer'
             body = MIMEText(
                 f'Beste {recipient[name_column]},\n\n'
                 'Hierbij ontvang je (aangehecht) de eenmalige factuur voor opbouw van de buffer voor het atelier.\n'
