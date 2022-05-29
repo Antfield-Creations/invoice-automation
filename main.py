@@ -137,7 +137,7 @@ def main(config: Config) -> None:
             body = MIMEText(
                 f'Beste {recipient[name_column]},\n\n'
                 f'Hierbij ontvang je (aangehecht) de factuur voor maand {next_month} van {now.year}.\n'
-                'Gelieve deze z.s.m, doch uiterlijk binnen 14 dagen te voldoen. '
+                'Gelieve deze z.s.m, doch uiterlijk binnen 14 dagen te voldoen.\n'
                 'Alvast dank,Veel creatief plezier gewenst!\n\n'
                 'Het bestuur van Atelier Miereveld\n\n'
                 '(Dit bericht is automatisch aangemaakt en verzonden)'
