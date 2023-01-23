@@ -21,9 +21,9 @@ def get_credentials(config: Config) -> Credentials:
         )
 
     # If there are no (valid) credentials available, let the user log in.
-    print(f'Credentials are valid until {creds.expiry}')
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
+            print(f'Credentials are valid until {creds.expiry}')
             try:
                 creds.refresh(Request())
             except RefreshError:
@@ -34,6 +34,8 @@ def get_credentials(config: Config) -> Credentials:
         # Save the credentials for the next run
         with open(config['oauth']['token_path'], 'w') as token:
             token.write(creds.to_json())
+
+    print(f'Credentials are valid until {creds.expiry}')
 
     return creds
 

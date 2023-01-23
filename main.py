@@ -33,15 +33,17 @@ def main(config: Config) -> None:
     city_column = config['recipients']['city']
 
     now = datetime.datetime.now()
+    year = now.year
 
     # Get the invoice template
     invoice_template_doc_id = config['invoice']['template_doc_id']
+
     if config['invoice']['target_folder'] is not None:
         target_folder = config['invoice']['target_folder']
     else:
         # Get list of folders by current year
         year_folders = drive.list(
-            q=f"mimeType='application/vnd.google-apps.folder' and name='{now.year}'",
+            q=f"mimeType='application/vnd.google-apps.folder' and name='{year}'",
             spaces='drive',
             fields='nextPageToken, files(id, name)',
         ).execute()
@@ -51,10 +53,16 @@ def main(config: Config) -> None:
         else:
             target_folder = year_folders['files'][0]['id']
 
+    next_month = now.month + 1
+
+    # Wraparound for next year
+    if next_month > 12:
+        next_month -= 12
+        year += 1
+
     for recipient_id, recipient in enumerate(recipients):
-        next_month = now.month + 1
         # human-readable invoice id
-        invoice_id = f"AM{now.year}{next_month}-{recipient_id}"
+        invoice_id = f"AM{year}{next_month}-{recipient_id}"
 
         drive_response = drive.copy(
             fileId=invoice_template_doc_id,
@@ -87,11 +95,11 @@ def main(config: Config) -> None:
             }},
             {'replaceAllText': {
                     'containsText': {'text': '{{date}}'},
-                    'replaceText': f"{now.day}-{now.month}-{now.year}",
+                    'replaceText': f'{now.day}-{now.month}-{year}',
             }},
             {'replaceAllText': {
                     'containsText': {'text': '{{year}}'},
-                    'replaceText': str(now.year),
+                    'replaceText': str(year),
             }},
             {'replaceAllText': {
                     'containsText': {'text': '{{month}}'},
@@ -133,10 +141,10 @@ def main(config: Config) -> None:
 
             message['to'] = recipient[email_column]
             message['from'] = 'ateliermiereveld@gmail.com'
-            message['subject'] = f'Contributie {now.year}-{next_month}'
+            message['subject'] = f'Contributie {year}-{next_month}'
             body = MIMEText(
                 f'Beste {recipient[name_column]},\n\n'
-                f'Hierbij ontvang je (aangehecht) de factuur voor maand {next_month} van {now.year}.\n'
+                f'Hierbij ontvang je (aangehecht) de factuur voor maand {next_month} van {year}.\n'
                 'Gelieve deze z.s.m, doch uiterlijk binnen 14 dagen te voldoen.\n'
                 'Alvast dank,Veel creatief plezier gewenst!\n\n'
                 'Het bestuur van Atelier Miereveld\n\n'
