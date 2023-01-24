@@ -31,6 +31,8 @@ def main(config: Config) -> None:
     address_column = config['recipients']['address']
     postcode_column = config['recipients']['postcode']
     city_column = config['recipients']['city']
+    is_active_column = config['recipients']['is_active']['column']
+    is_active_truth_values = config['recipients']['is_active']['true_value']
 
     now = datetime.datetime.now()
     year = now.year
@@ -61,6 +63,9 @@ def main(config: Config) -> None:
         year += 1
 
     for recipient_id, recipient in enumerate(recipients):
+        if recipient[is_active_column] not in is_active_truth_values:
+            continue
+
         # human-readable invoice id
         invoice_id = f"AM{year}{next_month}-{recipient_id}"
 
