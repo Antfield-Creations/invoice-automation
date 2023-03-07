@@ -20,6 +20,11 @@ pipenv install
 ```
 If you don't have `pipenv`, install it using `pip install --user pipenv`.
 
+## Running
+```shell
+pipenv run main.py
+```
+
 ## What it does
 The script:
 - [X] It reads the recipient detailss from `config['recipients']['sheet_id']`
