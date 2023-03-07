@@ -35,7 +35,13 @@ def main(config: Config) -> None:
     is_active_truth_values = config['recipients']['is_active']['true_value']
 
     now = datetime.datetime.now()
-    year = now.year
+
+    # Allow reading predefined year from config
+    if config['invoice']['year'] is not None:
+        year = config['invoice']['year']
+    # Otherwise: set the year from the system time
+    else:
+        year = now.year
 
     # Get the invoice template
     invoice_template_doc_id = config['invoice']['template_doc_id']
@@ -55,7 +61,12 @@ def main(config: Config) -> None:
         else:
             target_folder = year_folders['files'][0]['id']
 
-    next_month = now.month + 1
+    # Allow reading predefined month from config
+    if config['invoice']['month'] is not None:
+        next_month = config['invoice']['month']
+    # Otherwise: set the month from the system time
+    else:
+        next_month = now.month + 1
 
     # Wraparound for next year
     if next_month > 12:

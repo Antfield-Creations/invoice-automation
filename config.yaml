@@ -9,6 +9,10 @@ oauth:
     - https://www.googleapis.com/auth/gmail.send
 
 invoice:
+  # Leave empty to get year from system time
+  year:
+  # Leave empty to get month from system time
+  month:
   template_doc_id: 1DTDvMk7g-bS_LM0tEijcijxUee6SIN1esTywyeW__hs
   # Set target_folder to empty to automatically use a folder by year
   target_folder: # 1JgtKVhl7LLll1und9xDjxWunXRQGp__b
