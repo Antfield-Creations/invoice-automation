@@ -22,7 +22,7 @@ If you don't have `pipenv`, install it using `pip install --user pipenv`.
 
 ## Running
 ```shell
-pipenv run main.py
+pipenv run python main.py
 ```
 
 ## What it does
