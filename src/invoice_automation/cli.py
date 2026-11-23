@@ -2,6 +2,7 @@ import argparse
 import csv
 import datetime
 import os
+import sys
 from pathlib import Path
 from typing import List, Optional, Sequence
 
@@ -22,12 +23,13 @@ def resolve_period(
 ) -> tuple[int, int]:
     """Invoice period: CLI args override config, config overrides system time.
 
-    Invoices are issued for *next* month, with wraparound into the next year.
+    Defaults to the current year and month; an explicit month > 12 wraps
+    into the next year.
     """
     invoice_config = config.get('invoice', {})
 
     year = year_arg or invoice_config.get('year') or now.year
-    month = month_arg or invoice_config.get('month') or now.month + 1
+    month = month_arg or invoice_config.get('month') or now.month
 
     if month > 12:
         month -= 12
@@ -72,6 +74,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser.add_argument('--out', default=os.environ.get('INVOICE_OUT_DIR', 'out'),
                         help='Output dir for PDFs and invoice_log.csv')
     parser.add_argument('--templates', default=None, help='Template dir (default: config templates_dir)')
+    parser.add_argument('--member',
+                        help='Invoice only this member, by name or email (default: $MEMBER, else all members)')
     parser.add_argument('--dry-run', action='store_true', help='Generate PDFs and log, but do not send mail or archive')
     parser.add_argument('--no-archive', action='store_true', help='Do not upload results to Proton Drive')
     args = parser.parse_args(argv)
@@ -85,6 +89,16 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         str(recipients_path),
         active_values=config.get('recipients', {}).get('active_values'),
     )
+
+    # Optional single-member run: match on name or email (case-insensitive).
+    # An explicitly selected member is invoiced even if marked inactive.
+    member = (args.member or os.environ.get('MEMBER') or '').strip()
+    if member:
+        needle = member.lower()
+        recipients = [r for r in recipients if r.email.lower() == needle or r.name.lower() == needle]
+        if not recipients:
+            print(f'No member matches {member!r} (tried name and email)', file=sys.stderr)
+            return 1
 
     templates_dir = args.templates or config.get('templates_dir', 'templates')
     env = make_environment(templates_dir)
@@ -101,7 +115,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
     log_rows: List[dict] = []
     for index, recipient in enumerate(recipients):
-        if not recipient.active:
+        if not recipient.active and not member:
             print(f'Skipping inactive member: {recipient.name}')
             continue
 

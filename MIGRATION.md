@@ -148,7 +148,9 @@ runs `make run` (Docker required locally for the mail step).
 ## 6. GitHub Actions workflow (`.github/workflows/invoice.yml`)
 
 - Triggers: `schedule` cron `0 8 1 * *` (1st of the month, 08:00 UTC) and
-  `workflow_dispatch` with inputs `year`, `month` (optional overrides) and
+  `workflow_dispatch` with inputs `year` (empty = current year), `month`
+  (empty = current month), `member` (empty = all members; otherwise a single
+  member by name or email) and
   `dry_run` (default **true** for manual runs — recipients fetched, PDFs
   generated and uploaded to Drive, nothing e-mailed).
 - Steps: checkout → `astral-sh/setup-uv` → `make install` → `make lint` →

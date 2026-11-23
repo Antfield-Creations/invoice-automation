@@ -7,7 +7,7 @@ invoice:
   id_prefix: AM
   # Monthly contribution amount shown on the invoice
   amount: "€ 25,00"
-  # Leave empty to derive from system time (invoices are issued for next month)
+  # Leave empty to default to the current year/month
   year:
   month:
 

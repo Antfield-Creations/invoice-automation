@@ -7,11 +7,15 @@ on:
   workflow_dispatch:
     inputs:
       year:
-        description: 'Invoice year (empty = derive from run date)'
+        description: 'Invoice year (empty = current year)'
         required: false
         type: string
       month:
-        description: 'Invoice month (empty = next month)'
+        description: 'Invoice month (empty = current month)'
+        required: false
+        type: string
+      member:
+        description: 'Invoice only this member, by name or email (empty = all members)'
         required: false
         type: string
       dry_run:
@@ -84,6 +88,7 @@ jobs:
         env:
           YEAR: ${{ inputs.year }}
           MONTH: ${{ inputs.month }}
+          MEMBER: ${{ inputs.member }}
           DRY_RUN: ${{ inputs.dry_run && '1' || '' }}
 
       - name: Guard - no PII in the repository

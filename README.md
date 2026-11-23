@@ -40,7 +40,8 @@ make install-cli    # proton-drive CLI
 ```shell
 make run                          # full pipeline (fetch -> generate -> send -> archive)
 make generate                     # dry run: PDFs only, archived to Drive, no mail
-make run YEAR=2026 MONTH=5        # override invoice period
+make run YEAR=2026 MONTH=5        # override invoice period (default: current year/month)
+make run MEMBER=piet@example.com  # invoice a single member, by name or email (default: all)
 make run DRY_RUN=1                # dry run via env
 ```
 

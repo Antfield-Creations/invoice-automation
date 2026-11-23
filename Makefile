@@ -18,10 +18,12 @@ BRIDGE_DATA ?= $(CURDIR)/.bridge-data
 
 YEAR ?=
 MONTH ?=
+MEMBER ?=
 DRY_RUN ?=
 
 YEAR_ARG = $(if $(YEAR),--year $(YEAR))
 MONTH_ARG = $(if $(MONTH),--month $(MONTH))
+MEMBER_ARG = $(if $(MEMBER),--member $(MEMBER))
 DRY_RUN_ARG = $(if $(filter 1 true,$(DRY_RUN)),--dry-run)
 COMMON_ENV = RECIPIENTS_FILE=$(WORK_DIR)/leden.csv
 
@@ -58,15 +60,15 @@ fetch-recipients:
 
 # Render PDFs only (dry run: no mail is sent; PDFs still go to Drive for inspection)
 generate: fetch-recipients
-	DRY_RUN=1 $(COMMON_ENV) $(PY) src/main.py --out $(OUT_DIR) $(YEAR_ARG) $(MONTH_ARG)
+	DRY_RUN=1 $(COMMON_ENV) $(PY) src/main.py --out $(OUT_DIR) $(YEAR_ARG) $(MONTH_ARG) $(MEMBER_ARG)
 
 # Fetch recipients, generate PDFs, send mail, archive to Drive
 send: fetch-recipients
-	$(COMMON_ENV) $(PY) src/main.py --out $(OUT_DIR) $(YEAR_ARG) $(MONTH_ARG)
+	$(COMMON_ENV) $(PY) src/main.py --out $(OUT_DIR) $(YEAR_ARG) $(MONTH_ARG) $(MEMBER_ARG)
 
 # Full pipeline in one process (the CLI fetches recipients and archives itself)
 run:
-	$(PY) src/main.py --out $(OUT_DIR) $(YEAR_ARG) $(MONTH_ARG) $(DRY_RUN_ARG)
+	$(PY) src/main.py --out $(OUT_DIR) $(YEAR_ARG) $(MONTH_ARG) $(MEMBER_ARG) $(DRY_RUN_ARG)
 
 archive:
 	$(PROTON_DRIVE) filesystem upload $(OUT_DIR) $(ARCHIVE_REMOTE_ROOT)

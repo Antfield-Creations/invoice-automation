@@ -143,9 +143,60 @@ def test_dry_run_env_var(workspace, monkeypatch):
     assert sent == []
 
 
-def test_resolve_period_wraps_past_december():
+def test_resolve_period_defaults_to_current_year_and_month():
+    now = datetime.datetime(2026, 4, 28)
+    assert cli.resolve_period(now, {}, None, None) == (2026, 4)
+
+
+def test_resolve_period_wraps_explicit_month_past_december():
     now = datetime.datetime(2026, 12, 15)
-    assert cli.resolve_period(now, {}, None, None) == (2027, 1)
+    assert cli.resolve_period(now, {}, None, 13) == (2027, 1)
+
+
+def test_member_filter_by_email(workspace, monkeypatch):
+    monkeypatch.setattr(cli, 'send_message', lambda smtp, message: None)
+    monkeypatch.setattr(drive, 'upload', lambda local, remote: None)
+
+    out = _run(workspace, '--dry-run', '--year', '2026', '--month', '5', '--member', 'PIET@example.com')
+
+    assert (out / 'AM20265-0.pdf').exists()
+    assert not (out / 'AM20265-1.pdf').exists()
+
+
+def test_member_filter_can_target_inactive_member_by_name(workspace, monkeypatch):
+    # Klaas is marked inactive in the fixture; an explicit selection still invoices him
+    monkeypatch.setattr(cli, 'send_message', lambda smtp, message: None)
+    monkeypatch.setattr(drive, 'upload', lambda local, remote: None)
+
+    out = _run(workspace, '--dry-run', '--year', '2026', '--month', '5', '--member', 'klaas klaassen')
+
+    assert (out / 'AM20265-0.pdf').exists()
+    with open(out / 'invoice_log.csv', newline='', encoding='utf-8') as f:
+        rows = list(csv.DictReader(f))
+    assert rows[0]['email'] == 'klaas@example.com'
+
+
+def test_member_env_var(workspace, monkeypatch):
+    monkeypatch.setenv('MEMBER', 'piet@example.com')
+    monkeypatch.setattr(cli, 'send_message', lambda smtp, message: None)
+    monkeypatch.setattr(drive, 'upload', lambda local, remote: None)
+
+    out = _run(workspace, '--dry-run', '--year', '2026', '--month', '5')
+
+    assert (out / 'AM20265-0.pdf').exists()
+    assert not (out / 'AM20265-1.pdf').exists()
+
+
+def test_unknown_member_returns_error(workspace, monkeypatch, tmp_path):
+    _, config, members, _ = workspace
+    monkeypatch.setattr(drive, 'upload', lambda local, remote: None)
+
+    out = tmp_path / 'out'
+    rc = cli.main(['-c', str(config), '--recipients', str(members), '--out', str(out),
+                   '--dry-run', '--year', '2026', '--month', '5', '--member', 'nobody'])
+
+    assert rc == 1
+    assert not list(out.glob('*.pdf'))
 
 
 def test_resolve_period_config_overrides_system_time_and_args_win():
