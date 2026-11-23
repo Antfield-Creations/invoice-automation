@@ -1,4 +1,5 @@
 [build-system]
+# uv's native build backend: builds and installs the src/invoice_automation package itself
 requires = ["uv_build>=0.13"]
 build-backend = "uv_build"
 
@@ -9,16 +10,16 @@ description = "Automate the boring stuff: monthly recurring invoices for Atelier
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "jinja2",
-    "pyyaml",
-    "weasyprint",
+    "jinja2",      # renders templates/invoice.html with recipient/invoice data (src/invoice_automation/render.py)
+    "pyyaml",      # loads config.yaml (src/invoice_automation/config.py)
+    "weasyprint",  # HTML -> PDF invoice rendering (src/invoice_automation/render.py); needs system pango libs, see `make install-system`
 ]
 
 [dependency-groups]
 dev = [
-    "pytest",
-    "pytest-cov",
-    "ruff",
+    "pytest",      # test runner for tests/ (`make test`)
+    "pytest-cov",  # coverage measurement (`make coverage`)
+    "ruff",        # linter/formatter checks (`make lint`)
 ]
 
 [tool.pytest.ini_options]
