@@ -58,15 +58,15 @@ fetch-recipients:
 
 # Render PDFs only (dry run: no mail is sent; PDFs still go to Drive for inspection)
 generate: fetch-recipients
-	DRY_RUN=1 $(COMMON_ENV) $(PY) -m invoice_automation.main --out $(OUT_DIR) $(YEAR_ARG) $(MONTH_ARG)
+	DRY_RUN=1 $(COMMON_ENV) $(PY) src/main.py --out $(OUT_DIR) $(YEAR_ARG) $(MONTH_ARG)
 
 # Fetch recipients, generate PDFs, send mail, archive to Drive
 send: fetch-recipients
-	$(COMMON_ENV) $(PY) -m invoice_automation.main --out $(OUT_DIR) $(YEAR_ARG) $(MONTH_ARG)
+	$(COMMON_ENV) $(PY) src/main.py --out $(OUT_DIR) $(YEAR_ARG) $(MONTH_ARG)
 
 # Full pipeline in one process (the CLI fetches recipients and archives itself)
 run:
-	$(PY) -m invoice_automation.main --out $(OUT_DIR) $(YEAR_ARG) $(MONTH_ARG) $(DRY_RUN_ARG)
+	$(PY) src/main.py --out $(OUT_DIR) $(YEAR_ARG) $(MONTH_ARG) $(DRY_RUN_ARG)
 
 archive:
 	$(PROTON_DRIVE) filesystem upload $(OUT_DIR) $(ARCHIVE_REMOTE_ROOT)

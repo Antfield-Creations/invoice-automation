@@ -47,7 +47,7 @@ make run DRY_RUN=1                # dry run via env
 Or directly:
 
 ```shell
-uv run python -m invoice_automation.main --help
+uv run python src/main.py --help
 ```
 
 ## Testing
@@ -61,14 +61,15 @@ make lint        # ruff
 ## Layout
 
 ```
-src/invoice_automation/
-  main.py         # entry point: uv run python -m invoice_automation.main
-  cli.py          # orchestration: fetch -> generate -> send -> archive
-  config.py       # config.yaml loading
-  recipients.py   # members CSV parsing (never stored in the repo)
-  render.py       # Jinja2 -> HTML -> PDF (WeasyPrint)
-  mail.py         # MIME message + SMTP send (attachment named <invoice_id>.pdf)
-  drive.py        # proton-drive CLI wrapper (download/upload)
+src/
+  main.py           # entry point: uv run python src/main.py
+  invoice_automation/
+    cli.py          # orchestration: fetch -> generate -> send -> archive
+    config.py       # config.yaml loading
+    recipients.py   # members CSV parsing (never stored in the repo)
+    render.py       # Jinja2 -> HTML -> PDF (WeasyPrint)
+    mail.py         # MIME message + SMTP send (attachment named <invoice_id>.pdf)
+    drive.py        # proton-drive CLI wrapper (download/upload)
 templates/invoice.html
 tests/
 Makefile          # all commands used by the workflow

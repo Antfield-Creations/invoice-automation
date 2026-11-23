@@ -26,7 +26,7 @@ testpaths = ["tests"]
 
 [tool.coverage.run]
 # entry-point shim; exercised via subprocess in tests/test_main.py
-omit = ["src/invoice_automation/main.py"]
+omit = ["src/main.py"]
 
 [tool.ruff]
 src = ["src"]
