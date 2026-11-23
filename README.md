@@ -16,13 +16,13 @@ Assumes the following:
 
 ## Installation
 ```shell
-pipenv install
+uv sync
 ```
-If you don't have `pipenv`, install it using `pip install --user pipenv`.
+If you don't have `uv`, install it via [the uv installer](https://docs.astral.sh/uv/getting-started/installation/).
 
 ## Running
 ```shell
-pipenv run python main.py
+uv run python main.py
 ```
 
 ## What it does
