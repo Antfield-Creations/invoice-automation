@@ -7,18 +7,30 @@ name = "invoice-automation"
 version = "0.1.0"
 description = "Automate the boring stuff: monthly recurring invoices for Atelier Miereveld"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 dependencies = [
-    "google-api-python-client",
-    "google-auth-httplib2",
-    "google-auth-oauthlib",
+    "jinja2",
     "pyyaml",
+    "weasyprint",
 ]
 
 [dependency-groups]
 dev = [
     "pytest",
+    "pytest-cov",
+    "ruff",
 ]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.coverage.run]
+# entry-point shim; exercised via subprocess in tests/test_main_module.py
+omit = ["src/invoice_automation/__main__.py"]
+
+[tool.ruff]
+src = ["src"]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]

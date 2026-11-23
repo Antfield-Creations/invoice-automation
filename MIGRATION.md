@@ -130,7 +130,7 @@ working tree) contains recipient/invoice data files. Downloads go to
 | Target                                                       | Purpose                                                                                      |
 |--------------------------------------------------------------|----------------------------------------------------------------------------------------------|
 | `make install`                                               | system libs (WeasyPrint/pango) + `uv sync` + install `proton-drive` CLI                      |
-| `make lint` / `make test`                                    | ruff + pytest                                                                                |
+| `make lint` / `make test`                                    | ruff + pytest + pytest-cov (`make coverage`)                                                                                |
 | `make drive-login`                                           | non-interactive `proton-drive auth login` from secrets (pass store in `$RUNNER_TEMP`)        |
 | `make fetch-recipients`                                      | download `/Leden/leden.csv` to `$RUNNER_TEMP`                                                |
 | `make generate`                                              | render all PDFs named `<invoice_id>.pdf` into `$RUNNER_TEMP/invoices/`                       |
@@ -154,8 +154,10 @@ runs `make run` (Docker required locally for the mail step).
 - Steps: checkout → `astral-sh/setup-uv` → `make install` → `make lint` →
   `make test` → `make check-no-pii` → `make drive-login` →
   `make bridge-login && make bridge-up` (Bridge is the decided mail path) →
-  `make run` with secrets as env → `make archive` (skipped on
-  dry-run) → summary/log artifact (no PII).
+  `make run` with secrets as env → summary output (no artifact upload —
+  the repo is public and PDFs/log contain member data; inspect them in
+  Proton Drive instead). On dry-run no mail is sent, but PDFs are still
+  archived to Drive for inspection.
 - Secrets (GitHub Actions secrets only, never in the repo):
   `PROTON_USERNAME`, `PROTON_PASSWORD`, `PROTON_MAILBOX_PASSWORD`,
   `PROTON_TOTP_SECRET`, `PROTON_DRIVE_CREDENTIALS_STORE` setup (cached pass

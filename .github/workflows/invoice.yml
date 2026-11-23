@@ -1,0 +1,94 @@
+name: Invoices
+
+on:
+  schedule:
+    # 1st of the month, 08:00 UTC
+    - cron: '0 8 1 * *'
+  workflow_dispatch:
+    inputs:
+      year:
+        description: 'Invoice year (empty = derive from run date)'
+        required: false
+        type: string
+      month:
+        description: 'Invoice month (empty = next month)'
+        required: false
+        type: string
+      dry_run:
+        description: 'Generate PDFs (archived to Drive) but do not send mail'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  invoice:
+    runs-on: ubuntu-latest
+    env:
+      WORK_DIR: ${{ runner.temp }}/work
+      OUT_DIR: ${{ runner.temp }}/invoices
+      # Local SMTP exposed by Proton Mail Bridge (started below)
+      SMTP_HOST: 127.0.0.1
+      SMTP_PORT: '1025'
+      SMTP_TLS: '0'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies and Proton Drive CLI
+        run: |
+          make install-system
+          make install-cli
+          uv sync
+
+      # The Bridge session is persisted in .bridge-data; caching it means
+      # bridge-login only has to run once (credentials fed from secrets).
+      - uses: actions/cache@v4
+        with:
+          path: .bridge-data
+          key: proton-bridge-${{ github.repository }}
+          restore-keys: proton-bridge-
+
+      - name: Set up headless credential store for proton-drive
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+        run: |
+          echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+          echo "$GPG_PASSPHRASE" | gpg --batch --pinentry-mode loopback --passphrase-fd 0 --export-secret-keys "$GPG_KEY_ID" > /dev/null
+          sudo apt-get install -y pass
+          pass init "$GPG_KEY_ID"
+
+      - name: Proton Drive login
+        run: make drive-login
+        env:
+          PROTON_DRIVE_CREDENTIALS_STORE: pass
+          PROTON_USERNAME: ${{ secrets.PROTON_USERNAME }}
+          PROTON_PASSWORD: ${{ secrets.PROTON_PASSWORD }}
+          PROTON_TOTP: ${{ secrets.PROTON_TOTP_SECRET }}
+
+      - name: Start Proton Mail Bridge
+        run: |
+          make bridge-login
+          make bridge-up
+          # Expose Bridge's generated SMTP credentials to later steps
+          make bridge-creds >> "$GITHUB_ENV"
+
+      - name: Run invoicing
+        run: make run
+        env:
+          YEAR: ${{ inputs.year }}
+          MONTH: ${{ inputs.month }}
+          DRY_RUN: ${{ inputs.dry_run && '1' || '' }}
+
+      - name: Guard - no PII in the repository
+        run: make check-no-pii
+
+      # NOTE: never upload invoice_log.csv or PDFs as artifacts - this repo is
+      # public and those files contain member data. Inspect them in Proton
+      # Drive under /Facturen/<year>/<month>/ instead.

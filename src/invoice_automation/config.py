@@ -1,10 +1,9 @@
-from typing import Dict, Union
+from typing import Any, Dict
 
 import yaml
 
-# Type alias for the config object
-# Three-level max nesting of str -> str -> str
-Config = Dict[str, Union[str, Dict[str, Dict[str, str]]]]
+# Type alias for the config object: free-form nested mapping
+Config = Dict[str, Any]
 
 
 def load_config(path: str = 'config.yaml') -> Config:

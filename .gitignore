@@ -131,3 +131,7 @@ dmypy.json
 /credentials/
 /credentials.zip
 /.idea/
+/.work/
+/out/
+/.bridge-data/
+/invoices/
