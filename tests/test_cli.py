@@ -153,6 +153,24 @@ def test_resolve_period_wraps_explicit_month_past_december():
     assert cli.resolve_period(now, {}, None, 13) == (2027, 1)
 
 
+def test_resolve_period_rolls_months_beyond_24():
+    now = datetime.datetime(2026, 4, 28)
+    assert cli.resolve_period(now, {}, None, 24) == (2027, 12)
+    assert cli.resolve_period(now, {}, None, 25) == (2028, 1)
+
+
+def test_resolve_period_rolls_month_zero_and_negative_backwards():
+    now = datetime.datetime(2026, 4, 28)
+    assert cli.resolve_period(now, {}, None, 0) == (2025, 12)
+    assert cli.resolve_period(now, {}, None, -3) == (2025, 9)
+
+
+def test_resolve_period_accepts_string_values_from_yaml_config():
+    now = datetime.datetime(2026, 4, 28)
+    assert cli.resolve_period(now, {'invoice': {'year': '2026', 'month': '13'}}, None, None) == (2027, 1)
+    assert cli.resolve_period(now, {'invoice': {'month': '5'}}, None, None) == (2026, 5)
+
+
 def test_member_filter_by_email(workspace, monkeypatch):
     monkeypatch.setattr(cli, 'send_message', lambda smtp, message: None)
     monkeypatch.setattr(drive, 'upload', lambda local, remote: None)

@@ -23,19 +23,21 @@ def resolve_period(
 ) -> tuple[int, int]:
     """Invoice period: CLI args override config, config overrides system time.
 
-    Defaults to the current year and month; an explicit month > 12 wraps
-    into the next year.
+    Defaults to the current year and month. Out-of-range months roll over
+    into adjacent years: month 13 -> January of next year, month 0 ->
+    December of the previous year.
     """
     invoice_config = config.get('invoice', {})
 
-    year = year_arg or invoice_config.get('year') or now.year
-    month = month_arg or invoice_config.get('month') or now.month
+    year = year_arg if year_arg is not None else invoice_config.get('year') or now.year
+    month = month_arg if month_arg is not None else invoice_config.get('month') or now.month
+    year, month = int(year), int(month)
 
-    if month > 12:
-        month -= 12
-        year += 1
+    if not 1 <= month <= 12:
+        year += (month - 1) // 12
+        month = (month - 1) % 12 + 1
 
-    return int(year), int(month)
+    return year, month
 
 
 def make_invoice_id(prefix: str, year: int, month: int, index: int) -> str:
