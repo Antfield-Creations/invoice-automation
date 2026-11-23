@@ -30,8 +30,6 @@ jobs:
   invoice:
     runs-on: ubuntu-latest
     env:
-      WORK_DIR: ${{ runner.temp }}/work
-      OUT_DIR: ${{ runner.temp }}/invoices
       # Local SMTP exposed by Proton Mail Bridge (started below)
       SMTP_HOST: 127.0.0.1
       SMTP_PORT: '1025'
@@ -86,6 +84,9 @@ jobs:
       - name: Run invoicing
         run: make run
         env:
+          # runner context is only available at step level, not workflow level
+          WORK_DIR: ${{ runner.temp }}/work
+          OUT_DIR: ${{ runner.temp }}/invoices
           YEAR: ${{ inputs.year }}
           MONTH: ${{ inputs.month }}
           MEMBER: ${{ inputs.member }}

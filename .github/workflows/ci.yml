@@ -1,0 +1,36 @@
+name: CI
+
+# Code changes only: lint + test on every push and pull request.
+# The invoice workflow (invoice.yml) runs on a monthly schedule and manual
+# dispatch only - it must never run on push.
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install system dependencies (WeasyPrint/pango)
+        run: make install-system
+
+      - name: Install
+        run: uv sync
+
+      - name: Lint
+        run: make lint
+
+      - name: Test with coverage
+        run: make coverage
+
+      - name: Guard - no PII in the repository
+        run: make check-no-pii

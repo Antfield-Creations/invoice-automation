@@ -145,16 +145,21 @@ All Makefile targets run identically locally and in CI — the Docker details of
 Bridge are hidden inside the `make bridge-*` targets, so a successor only ever
 runs `make run` (Docker required locally for the mail step).
 
-## 6. GitHub Actions workflow (`.github/workflows/invoice.yml`)
+## 6. GitHub Actions workflows
 
-- Triggers: `schedule` cron `0 8 1 * *` (1st of the month, 08:00 UTC) and
+Two workflows, deliberately separated:
+
+- `.github/workflows/ci.yml` — code changes only: runs on `push` and
+  `pull_request`, executes `make install-system`, `uv sync`, `make lint`,
+  `make coverage`, `make check-no-pii`.
+- `.github/workflows/invoice.yml` — invoicing: **never on push**, only
+  `schedule` cron `0 8 1 * *` (1st of the month, 08:00 UTC) and
   `workflow_dispatch` with inputs `year` (empty = current year), `month`
   (empty = current month), `member` (empty = all members; otherwise a single
   member by name or email) and
   `dry_run` (default **true** for manual runs — recipients fetched, PDFs
   generated and uploaded to Drive, nothing e-mailed).
-- Steps: checkout → `astral-sh/setup-uv` → `make install` → `make lint` →
-  `make test` → `make check-no-pii` → `make drive-login` →
+- Steps: checkout → `astral-sh/setup-uv` → `make install` → `make drive-login` →
   `make bridge-login && make bridge-up` (Bridge is the decided mail path) →
   `make run` with secrets as env → summary output (no artifact upload —
   the repo is public and PDFs/log contain member data; inspect them in
