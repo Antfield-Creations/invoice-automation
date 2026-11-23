@@ -47,7 +47,7 @@ make run DRY_RUN=1                # dry run via env
 Or directly:
 
 ```shell
-uv run python -m invoice_automation --help
+uv run python -m invoice_automation.main --help
 ```
 
 ## Testing
@@ -62,6 +62,7 @@ make lint        # ruff
 
 ```
 src/invoice_automation/
+  main.py         # entry point: uv run python -m invoice_automation.main
   cli.py          # orchestration: fetch -> generate -> send -> archive
   config.py       # config.yaml loading
   recipients.py   # members CSV parsing (never stored in the repo)
