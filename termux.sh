@@ -1,1 +1,1 @@
-BROWSER=termux-open-url uv run python main.py
+BROWSER=termux-open-url uv run python -m invoice_automation

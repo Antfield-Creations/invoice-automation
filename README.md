@@ -22,7 +22,12 @@ If you don't have `uv`, install it via [the uv installer](https://docs.astral.sh
 
 ## Running
 ```shell
-uv run python main.py
+uv run python -m invoice_automation
+```
+
+## Testing
+```shell
+uv run pytest
 ```
 
 ## What it does

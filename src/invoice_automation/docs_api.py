@@ -1,6 +1,6 @@
 from typing import List, Dict
 
-from config import Config
+from .config import Config
 
 
 def get_recipients(sheets, config: Config) -> List[Dict[str, str]]:

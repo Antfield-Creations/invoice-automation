@@ -12,9 +12,9 @@ from tempfile import TemporaryDirectory
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
 
-from auth import get_credentials
-from config import load_config, Config
-from docs_api import get_recipients
+from .auth import get_credentials
+from .config import load_config, Config
+from .docs_api import get_recipients
 
 
 def main(config: Config) -> None:

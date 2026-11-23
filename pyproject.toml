@@ -1,3 +1,7 @@
+[build-system]
+requires = ["uv_build>=0.13"]
+build-backend = "uv_build"
+
 [project]
 name = "invoice-automation"
 version = "0.1.0"
@@ -10,3 +14,11 @@ dependencies = [
     "google-auth-oauthlib",
     "pyyaml",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
